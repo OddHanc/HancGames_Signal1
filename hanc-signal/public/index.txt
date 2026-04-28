@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Hanc Signal</title>
+
+  <!-- Telegram SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      background: #eae6df;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    #container {
+      text-align: center;
+    }
+
+    #hanc {
+      width: 200px;
+      opacity: 0.95;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    #timer {
+      margin-top: 20px;
+      font-size: 13px;
+      opacity: 0.6;
+      letter-spacing: 1px;
+    }
+
+    #text {
+      margin-top: 10px;
+      font-size: 12px;
+      opacity: 0.35;
+    }
+
+    .glitch {
+      animation: glitch 0.2s;
+    }
+
+    @keyframes glitch {
+      0% { transform: translate(0px); }
+      25% { transform: translate(3px, -2px); }
+      50% { transform: translate(-2px, 2px); }
+      75% { transform: translate(2px, 1px); }
+      100% { transform: translate(0px); }
+    }
+
+    .flash {
+      opacity: 0.2;
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="container">
+  <img id="hanc" src="hanc.png" />
+  <div id="timer">0</div>
+  <div id="text">some moments matter more</div>
+</div>
+
+<script>
+  const tg = window.Telegram.WebApp;
+  tg.expand();
+
+  let start = Date.now();
+  let interactions = 0;
+  const maxInteractions = 7;
+
+  const timerEl = document.getElementById("timer");
+  const hanc = document.getElementById("hanc");
+
+  // TIMER
+  setInterval(() => {
+    let seconds = Math.floor((Date.now() - start) / 1000);
+    timerEl.innerText = seconds;
+  }, 1000);
+
+  // TAP / HOLD DETECTION
+  let holdTimeout;
+  let isHold = false;
+
+  document.body.addEventListener("touchstart", () => {
+    isHold = false;
+    holdTimeout = setTimeout(() => {
+      isHold = true;
+      handleAction("HOLD");
+    }, 600);
+  });
+
+  document.body.addEventListener("touchend", () => {
+    clearTimeout(holdTimeout);
+    if (!isHold) handleAction("TAP");
+  });
+
+  // DESKTOP SUPPORT
+  document.body.addEventListener("mousedown", () => {
+    isHold = false;
+    holdTimeout = setTimeout(() => {
+      isHold = true;
+      handleAction("HOLD");
+    }, 600);
+  });
+
+  document.body.addEventListener("mouseup", () => {
+    clearTimeout(holdTimeout);
+    if (!isHold) handleAction("TAP");
+  });
+
+  // MAIN ACTION
+  function handleAction(type) {
+    if (interactions >= maxInteractions) return;
+
+    interactions++;
+
+    fetch("/api/action", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ type })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.correct) {
+        triggerGlitch();
+      } else {
+        subtleFlash();
+      }
+    })
+    .catch(() => {});
+  }
+
+  // FEEDBACK
+  function triggerGlitch() {
+    hanc.classList.add("glitch");
+
+    setTimeout(() => {
+      hanc.classList.remove("glitch");
+    }, 200);
+
+    if (navigator.vibrate) {
+      navigator.vibrate(40);
+    }
+  }
+
+  function subtleFlash() {
+    hanc.classList.add("flash");
+
+    setTimeout(() => {
+      hanc.classList.remove("flash");
+    }, 100);
+  }
+</script>
+
+</body>
+</html>

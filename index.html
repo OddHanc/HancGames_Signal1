@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>HANC SIGNAL // SURVIVAL</title>
+
+  <link rel="stylesheet" href="style.css" />
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+</head>
+
+<body>
+
+  <div class="noise"></div>
+  <div class="scanline"></div>
+
+  <!-- HUD -->
+
+  <div class="hud">
+
+    <div>
+      SCORE:
+      <span id="score">0</span>
+    </div>
+
+    <div>
+      LIVES:
+      <span id="lives">3</span>
+    </div>
+
+  </div>
+
+  <!-- GAME -->
+
+  <div id="game-container">
+
+    <!-- BACKGROUND HANC -->
+
+    <img
+      src="assets/hanc.png"
+      id="hanc"
+      alt="HANC"
+    />
+
+    <!-- START SCREEN -->
+
+    <div id="start-screen">
+
+      <div class="menu-content">
+
+        <img
+          src="assets/hanc.png"
+          class="menu-hanc"
+          alt="HANC"
+        />
+
+        <h1>HANC SIGNAL</h1>
+
+        <p>
+          SURVIVE THE COLLAPSE
+        </p>
+
+        <button id="start-button">
+          START SIGNAL
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- GAME OVER -->
+
+    <div id="game-over" class="hidden">
+
+      <div class="menu-content">
+
+        <h2>SIGNAL LOST</h2>
+
+        <p>
+          FINAL SCORE:
+          <span id="final-score">0</span>
+        </p>
+
+        <button id="restart-button">
+          RETRY
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="telegram.js"></script>
+
+  <script src="app.js"></script>
+
+</body>
+
+</html>
